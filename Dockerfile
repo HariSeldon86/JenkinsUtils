@@ -22,4 +22,7 @@ RUN groupadd -g 999 docker && usermod -aG docker jenkins
 USER jenkins
 
 # Install common Jenkins plugins
-RUN jenkins-plugin-cli --plugins "blueocean docker-workflow docker-plugin"
+RUN jenkins-plugin-cli --plugins "blueocean docker-workflow docker-plugin configuration-as-code job-dsl github-branch-source"
+
+# Enable JCasC
+ENV CASC_JENKINS_CONFIG=/var/jenkins_home/casc_configs/jenkins_casc.yml

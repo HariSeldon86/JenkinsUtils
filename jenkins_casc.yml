@@ -1,0 +1,154 @@
+jenkins:
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: "${ADMIN_USERNAME}"
+          password: "${ADMIN_PASSWORD}"
+          name: "${ADMIN_NAME}"
+  authorizationStrategy:
+    loggedInUsersCanDoAnything:
+      allowAnonymousRead: false
+  remotingSecurity:
+    enabled: true
+
+unclassified:
+  location:
+    url: http://localhost:8080/
+  gitHubPluginConfig:
+    # apiRateLimitChecker: ThrottleForNormalize
+    configs:
+      - name: "Github"
+
+credentials:
+  system:
+    domainCredentials:
+      - credentials:
+          - usernamePassword:
+              scope: GLOBAL
+              id: "github-credentials"
+              username: "${GITHUB_USERNAME}"
+              password: "${GITHUB_TOKEN}"
+              description: "GitHub Personal Access Token"
+
+# === CREARE MULTI BRANCH PIPELINE (all brances parsed) ===
+
+# jobs:
+#   - script: >
+#       multibranchPipelineJob('ai-gym-pt') {
+#         branchSources {
+#           github {
+#             id('ai-gym-pt')
+#             scanCredentialsId('github-credentials')
+#             repoOwner('HariSeldon86')
+#             repository('ai-gym-pt')
+#             traits {
+#               gitHubBranchDiscovery {
+#                 strategyId(1)
+#               }
+#               gitHubPullRequestDiscovery {
+#                 strategyId(1)
+#               }
+#               gitHubNotificationContextTrait {
+#                 contextLabel('continuous-integration/jenkins')
+#                 typeSuffix(true)
+#               }
+#               cloneOptionTrait {
+#                 extension {
+#                   shallow(false)
+#                   noTags(false)
+#                   reference('')
+#                   timeout(10)
+#                 }
+#               }
+#             }
+#           }
+#         }
+#         factory {
+#           workflowBranchProjectFactory {
+#             scriptPath('jenkins/Jenkinsfile')
+#           }
+#         }
+#         orphanedItemStrategy {
+#           discardOldItems {
+#             numToKeep(10)
+#           }
+#         }
+#       }
+
+# jobs:
+#   - script: >
+#       multibranchPipelineJob('ai-gym-pt') {
+#         branchSources {
+#           github {
+#             id('ai-gym-pt')
+#             scanCredentialsId('github-credentials')
+#             repoOwner('HariSeldon86')
+#             repository('ai-gym-pt')
+#             buildOriginBranch(true)
+#             buildOriginBranchWithPR(true)
+#             buildOriginPRMerge(false)
+#             buildOriginPRHead(true)
+#             buildForkPRMerge(false)
+#             buildForkPRHead(false)
+#           }
+#         }
+#         factory {
+#           workflowBranchProjectFactory {
+#             scriptPath('jenkins/Jenkinsfile')
+#           }
+#         }
+#         orphanedItemStrategy {
+#           discardOldItems {
+#             numToKeep(10)
+#           }
+#         }
+#         triggers {
+#           periodic(30)
+#         }
+#       }
+
+
+# jobs:
+#   - script: >
+#       multibranchPipelineJob('ai-gym-pt') {
+#         branchSources {
+#           git {
+#             id('ai-gym-pt')
+#             remote('https://github.com/HariSeldon86/ai-gym-pt.git')
+#             credentialsId('github-credentials')
+#             includes('*')
+#           }
+#         }
+#         factory {
+#           workflowBranchProjectFactory {
+#             scriptPath('jenkins/Jenkinsfile')
+#           }
+#         }
+#         orphanedItemStrategy {
+#           discardOldItems {
+#             numToKeep(10)
+#           }
+#         }
+#       }
+
+
+# === CREATE SINGLE BRANCH PIPELINE ===
+jobs:
+  - script: >
+      pipelineJob('ai-gym-pt') {
+        definition {
+          cpsScm {
+            scm {
+              git {
+                remote {
+                  url('https://github.com/HariSeldon86/ai-gym-pt.git')
+                  credentials('github-credentials')
+                }
+                branches('main')
+              }
+            }
+            scriptPath('jenkins/Jenkinsfile')
+          }
+        }
+      }
