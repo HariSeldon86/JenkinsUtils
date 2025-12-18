@@ -17,13 +17,9 @@ services:
       - .env
     environment:
       - DOCKER_HOST=unix:///var/run/docker.sock
-    # restart: unless-stopped
+    restart: unless-stopped
     networks:
       - jenkins
-
-volumes:
-  jenkins_home:
-    driver: local
 
 networks:
   jenkins:

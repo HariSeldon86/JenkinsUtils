@@ -13,8 +13,8 @@ __pycache__/
 jenkins_home/
 
 # But you might want to keep some configs
-!jenkins_home/jobs/
-jenkins_home/jobs/*/builds/
-jenkins_home/jobs/*/workspace/
-jenkins_home/secrets/
-jenkins_home/*.log
+# !jenkins_home/jobs/
+# jenkins_home/jobs/*/builds/
+# jenkins_home/jobs/*/workspace/
+# jenkins_home/secrets/
+# jenkins_home/*.log

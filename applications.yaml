@@ -1,0 +1,24 @@
+# Jenkins Applications Configuration
+# This file is used to automatically generate Jenkins jobs.
+# 
+# Fields:
+# - name: Name of the Jenkins job (must be unique)
+# - owner: GitHub repository owner
+# - repo: GitHub repository name
+# - type: 'multibranch' or 'single' (default: multibranch)
+# - scriptPath: Path to the Jenkinsfile in the repository (default: jenkins/Jenkinsfile)
+# - branch: Branch to build for 'single' type jobs (default: main)
+
+applications:
+  - name: ai-gym-pt
+    owner: HariSeldon86
+    repo: ai-gym-pt
+    type: multibranch
+    scriptPath: jenkins/Jenkinsfile
+
+  # - name: ai-gym-pt-single
+  #   owner: HariSeldon86
+  #   repo: ai-gym-pt
+  #   type: single
+  #   branch: main
+  #   scriptPath: jenkins/Jenkinsfile

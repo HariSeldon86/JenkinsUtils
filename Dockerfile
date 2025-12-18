@@ -22,7 +22,14 @@ RUN groupadd -g 999 docker && usermod -aG docker jenkins
 USER jenkins
 
 # Install common Jenkins plugins
-RUN jenkins-plugin-cli --plugins "blueocean docker-workflow docker-plugin configuration-as-code job-dsl github-branch-source"
+
+# RUN jenkins-plugin-cli --verbose --plugins "blueocean docker-workflow docker-plugin configuration-as-code job-dsl github-branch-source timestamper pipeline-stage-view ws-cleanup credentials credentials-binding pipeline-utility-steps pipeline-groovy-lib git"
+
+COPY plugins.txt /usr/share/jenkins/ref/plugins.txt
+RUN jenkins-plugin-cli --verbose --plugin-file /usr/share/jenkins/ref/plugins.txt
+
+# Disable Jenkins setup wizard
+ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false -Djenkins.model.Jenkins.installStateName=RUNNING"
 
 # Enable JCasC
 ENV CASC_JENKINS_CONFIG=/var/jenkins_home/casc_configs/jenkins_casc.yml
