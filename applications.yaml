@@ -16,9 +16,9 @@ applications:
     type: multibranch
     scriptPath: jenkins/Jenkinsfile
 
-  # - name: ai-gym-pt-single
-  #   owner: HariSeldon86
-  #   repo: ai-gym-pt
-  #   type: single
-  #   branch: main
-  #   scriptPath: jenkins/Jenkinsfile
+  - name: ai-gym-pt-main
+    owner: HariSeldon86
+    repo: ai-gym-pt
+    type: single
+    branch: main
+    scriptPath: jenkins/Jenkinsfile

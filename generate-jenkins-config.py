@@ -65,6 +65,11 @@ def generate_casc_config(
       includes('*')
     }}
   }}
+  triggers {{
+    periodicFolderTrigger {{
+      interval('1m')
+    }}
+  }}
   factory {{
     workflowBranchProjectFactory {{
       scriptPath('{scriptPath}')
@@ -78,6 +83,9 @@ def generate_casc_config(
 }}"""
 
     SINGLE_BRANCH_TEMPLATE = """pipelineJob('{name}') {{
+  triggers {{
+    scm('*/1 * * * *')
+  }}
   definition {{
     cpsScm {{
       scm {{

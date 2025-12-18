@@ -79,6 +79,11 @@ jobs:
             includes('*')
           }
         }
+        triggers {
+          periodicFolderTrigger {
+            interval('1m')
+          }
+        }
         factory {
           workflowBranchProjectFactory {
             scriptPath('jenkins/Jenkinsfile')
@@ -87,6 +92,26 @@ jobs:
         orphanedItemStrategy {
           discardOldItems {
             numToKeep(10)
+          }
+        }
+      }
+
+      pipelineJob('ai-gym-pt-main') {
+        triggers {
+          scm('*/1 * * * *')
+        }
+        definition {
+          cpsScm {
+            scm {
+              git {
+                remote {
+                  url('https://github.com/HariSeldon86/ai-gym-pt.git')
+                  credentials('github-credentials')
+                }
+                branches('main')
+              }
+            }
+            scriptPath('jenkins/Jenkinsfile')
           }
         }
       }

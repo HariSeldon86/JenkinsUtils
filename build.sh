@@ -28,6 +28,6 @@ docker-compose up --build -d
 echo ""
 echo "Setup complete!" 
 echo "Jenkins is starting up..."
-echo "Check the logs for any errors >> docker-compose logs -f"
+echo "Check the logs for any errors: docker-compose logs -f"
 echo "Plugins are being installed in the background."
 echo "Access Jenkins at: http://localhost:8080"
