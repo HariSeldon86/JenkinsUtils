@@ -3,12 +3,25 @@
 # Exit on error
 set -e
 
-echo "[1/5] Stopping Jenkins containers (including volumes)..."
-docker-compose down -v
+MODE="update"
+if [ "$1" == "--clean" ]; then
+    MODE="clean"
+elif [ "$1" == "--update" ]; then
+    MODE="update"
+fi
 
-echo "[2/5] Cleaning up jenkins_home directory..."
-rm -rf jenkins_home
-mkdir jenkins_home
+echo "Mode: $MODE"
+
+if [ "$MODE" == "clean" ]; then
+    echo "[1/5] Stopping Jenkins containers and removing volumes..."
+    docker-compose down -v
+
+    echo "[2/5] Cleaning up jenkins_home directory..."
+    rm -rf jenkins_home
+    mkdir jenkins_home
+else
+    echo "[1-2/5] Skipping clean steps (incremental update)."
+fi
 
 echo "[3/5] Generating Jenkins JCasC configuration..."
 # Run the python generator
@@ -27,7 +40,8 @@ docker-compose up --build -d
 
 echo ""
 echo "Setup complete!" 
-echo "Jenkins is starting up..."
+echo "Jenkins is starting up (Mode: $MODE)..."
 echo "Check the logs for any errors: docker-compose logs -f"
 echo "Plugins are being installed in the background."
 echo "Access Jenkins at: http://localhost:8080"
+

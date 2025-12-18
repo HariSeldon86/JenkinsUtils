@@ -13,18 +13,26 @@ The goal of this project is to provide a "Jenkins-in-a-Box" experience where the
 
 ## Build Scripts
 
-The project includes cross-platform build scripts (`build.bat` for Windows and `build.sh` for Linux/macOS) to streamline the setup process.
+The project includes cross-platform build scripts (`build.bat` for Windows and `build.sh` for Linux/macOS) to streamline the setup process. These scripts support two modes of operation.
 
-### What the build scripts do:
-1. **Clean Environment**: Stops existing Jenkins containers and removes volumes to ensures a fresh start.
-2. **Directory Cleanup**: Wipes the `jenkins_home` directory.
-3. **Configuration Generation**: 
-   - Uses `uv sync` to manage Python dependencies.
-   - Runs `generate-jenkins-config.py` to convert `applications.yaml` into Jenkins Configuration as Code (`jenkins_casc.yml`).
-4. **Rebuild & Launch**: 
-   - Builds the custom Docker image (applying any `plugins.txt` changes).
-   - Starts Jenkins in detached mode.
-5. **Monitoring**: Provides a shortcut command to monitor startup logs.
+### Modes of Operation:
+
+1.  **Update Mode (Default)**: 
+    *   **Usage**: `./build.sh` or `./build.sh --update`
+    *   **What it does**: Skips destructive cleanup. Re-generates the JCasC configuration from `applications.yaml` and restarts the Jenkins container applying any changes to the Dockerfile, plugins, or configuration. This is the preferred way to apply changes without losing your Jenkins data.
+2.  **Clean Mode**:
+    *   **Usage**: `./build.sh --clean`
+    *   **What it does**: Perfroms a "factory reset". It stops containers, removes volumes, and wipes the `jenkins_home` directory before performing a fresh build and launch.
+
+### What the build scripts do (Summary):
+1.  **Environment Check**: Validates that the `.env` file exists.
+2.  **Cleanup (Clean Mode Only)**: Stops existing Jenkins containers, removes volumes, and wipes the local `jenkins_home` directory.
+3.  **Configuration Generation**: 
+    *   Uses `uv sync` to manage Python dependencies.
+    *   Runs `generate-jenkins-config.py` to convert `applications.yaml` into Jenkins Configuration as Code (`jenkins_casc.yml`).
+4.  **Rebuild & Launch**: 
+    *   Builds the custom Docker image (applying any `Dockerfile` or `plugins.txt` changes).
+    *   Starts Jenkins in detached mode.
 
 ## Setup Instructions
 
@@ -39,13 +47,22 @@ The project includes cross-platform build scripts (`build.bat` for Windows and `
 
 **On Windows:**
 ```cmd
+:: Incremental update (default)
 build.bat
+
+:: Fresh start (destructive)
+build.bat --clean
 ```
 
 **On Linux/macOS:**
 ```bash
 chmod +x build.sh
+
+# Incremental update (default)
 ./build.sh
+
+# Fresh start (destructive)
+./build.sh --clean
 ```
 
 ### 2. Follow the Logs
@@ -73,3 +90,43 @@ docker-compose down -v
 ```bash
 docker-compose up -d --build
 ```
+
+## Applications
+
+The `applications.yaml` file is used to define the applications to be built and deployed. The file is structured as follows:
+
+```yaml
+applications:
+  - name: application_name
+    owner: owner_name
+    repo: repo_name
+    type: multibranch
+    scriptPath: jenkins/Jenkinsfile
+    branch: main
+```
+
+Each application shall be responsible for its own build process, including the build of the Docker image, with the following folder structure:
+
+```bash
+application_name/
+├── jenkins/
+│   ├── Dockerfile
+│   └── Jenkinsfile
+|   └── ...
+├── ...
+```
+
+When applications are added to the `applications.yaml` file, the build script will generate a Jenkins job for each application:
+
+```bash
+uv run generate-jenkins-config.py
+```
+
+This will update the `jenkins_casc.yml` file in the `jenkins_home` directory.
+
+Finally, update the container to apply the changes:
+```bash
+docker-compose up -d --build
+```
+
+The whole update process can be run with `build.bat` or `build.sh`.
