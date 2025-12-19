@@ -14,7 +14,7 @@ def load_base_config(output_file="jenkins_casc.yml"):
     """Load base config without jobs section."""
     if not Path(output_file).exists():
         return {"jenkins": {}, "unclassified": {}, "credentials": {}}
-        
+
     with open(output_file, "r") as f:
         config = yaml.safe_load(f)
 
@@ -127,7 +127,11 @@ def generate_casc_config(
             )
         elif app_type == "single":
             job_script = SINGLE_BRANCH_TEMPLATE.format(
-                name=app_name, owner=owner, repo=repo, scriptPath=script_path, branch=branch
+                name=app_name,
+                owner=owner,
+                repo=repo,
+                scriptPath=script_path,
+                branch=branch,
             )
         else:
             print(f"✗ Warning: Unknown type '{app_type}' for {app_name}")
@@ -166,9 +170,10 @@ def generate_casc_config(
 if __name__ == "__main__":
     try:
         generate_casc_config()
-        print("\n✓ Configuration updated. Run: docker-compose restart jenkins")
+        print("\n✓ Configuration updated. Run: docker compose restart jenkins")
     except Exception as e:
         print(f"✗ Error: {e}", file=sys.stderr)
         import traceback
+
         traceback.print_exc()
         sys.exit(1)

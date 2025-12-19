@@ -42,6 +42,30 @@ The project includes cross-platform build scripts (`build.bat` for Windows and `
 - Python 3.12
 - `uv` (Python version manager)
 - `.env` file (copy `.env.example` to `.env` and fill in the values)
+- Docker GID: Ensure the `DOCKER_GID` in `.env` matches your host's docker group ID.
+
+### 0. Configure Docker GID
+
+To allow Jenkins to interact with the Docker socket, the container needs to know the GID of the `docker` group on your host.
+
+**On Linux:**
+Run the following command to find the GID:
+```bash
+getent group docker | cut -d: -f3
+```
+Or if `getent` is not available:
+```bash
+ls -ln /var/run/docker.sock | awk '{print $4}'
+```
+Update `DOCKER_GID` in your `.env` file with this value (usually `999` or `998`).
+
+**On Windows (Docker Desktop):**
+If you are using Docker Desktop with the WSL2 backend, the GID is typically `0` (root) or it handles permissions automatically. However, if you encounter permission issues with `/var/run/docker.sock`, you can check the GID from within your WSL2 terminal with the same command as on Linux; alternatively, you can check the GID from within your Windows terminal with:
+
+```powershell
+wsl getent group docker
+```
+Set `DOCKER_GID=0` (or the value found) in your `.env` if needed.
 
 ### 1. Run the Build Script
 
@@ -68,7 +92,7 @@ chmod +x build.sh
 ### 2. Follow the Logs
 Since Jenkins is started in detached mode, you should monitor the logs to see the plugin installation progress and wait for Jenkins to be fully ready:
 ```bash
-docker-compose logs -f
+docker compose logs -f
 ```
 
 ### 3. Access Jenkins
@@ -78,17 +102,17 @@ Once initialized, open your browser: [http://localhost:8080](http://localhost:80
 
 ### Stop Jenkins:
 ```bash
-docker-compose down
+docker compose down
 ```
 
 ### Remove everything (including volumes):
 ```bash
-docker-compose down -v
+docker compose down -v
 ```
 
 ### Rebuild after Dockerfile or Plugin changes:
 ```bash
-docker-compose up -d --build
+docker compose up -d --build
 ```
 
 ## Applications
@@ -126,7 +150,7 @@ This will update the `jenkins_casc.yml` file in the `jenkins_home` directory.
 
 Finally, update the container to apply the changes:
 ```bash
-docker-compose up -d --build
+docker compose up -d --build
 ```
 
 The whole update process can be run with `build.bat` or `build.sh`.
