@@ -6,12 +6,12 @@ job-dsl
 github-branch-source
 timestamper
 pipeline-stage-view
+pipeline-graph-view
 ws-cleanup
 credentials
 credentials-binding
 pipeline-utility-steps
 pipeline-groovy-lib
-hashicorp-vault-plugin
 aws-credentials
 amazon-ecr
 google-login

@@ -18,3 +18,6 @@ jenkins_home/
 # jenkins_home/jobs/*/workspace/
 # jenkins_home/secrets/
 # jenkins_home/*.log
+
+# tailscale
+tailscale_state/

@@ -76,6 +76,12 @@ build.bat
 
 :: Fresh start (destructive)
 build.bat --clean
+
+:: With Tailscale (for external access)
+build.bat --tailscale
+
+:: Clean build with Tailscale
+build.bat --clean --tailscale
 ```
 
 **On Linux/macOS:**
@@ -87,7 +93,41 @@ chmod +x build.sh
 
 # Fresh start (destructive)
 ./build.sh --clean
+
+# With Tailscale (for external access)
+./build.sh --tailscale
+
+# Clean build with Tailscale
+./build.sh --clean --tailscale
 ```
+
+## External Access with Tailscale
+
+By default, Jenkins is only accessible on `localhost:8080`. To enable secure external access via Tailscale VPN, use the `--tailscale` flag with the build scripts.
+
+### Prerequisites for Tailscale
+
+1. **Tailscale Account**: Sign up at [https://tailscale.com](https://tailscale.com)
+2. **Auth Key**: Generate an auth key from [https://login.tailscale.com/admin/settings/keys](https://login.tailscale.com/admin/settings/keys)
+   - Recommended: Enable "Reusable" and "Ephemeral" options
+3. **Add to .env**: Set `TS_AUTHKEY=<your-auth-key>` in your `.env` file
+
+### Using Tailscale Mode
+
+When you use the `--tailscale` flag, the build scripts will use `docker-compose.tailscale.yml` instead of the default `docker-compose.yml`. This deploys both Jenkins and Tailscale containers, with Jenkins accessible via your Tailscale network.
+
+**Example:**
+```bash
+# First time setup with Tailscale
+./build.sh --clean --tailscale
+
+# Update with Tailscale
+./build.sh --tailscale
+```
+
+Once running, access Jenkins from any device on your Tailscale network at:
+- **Via Tailscale**: `http://jenkins-utils:8080`
+- **Locally**: `http://localhost:8080`
 
 ### 2. Follow the Logs
 Since Jenkins is started in detached mode, you should monitor the logs to see the plugin installation progress and wait for Jenkins to be fully ready:

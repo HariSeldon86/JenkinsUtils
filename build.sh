@@ -4,21 +4,33 @@
 set -e
 
 MODE="update"
-if [ "$1" == "--clean" ]; then
-    MODE="clean"
-elif [ "$1" == "--update" ]; then
-    MODE="update"
-fi
+COMPOSE_FILE="docker-compose.yml"
+
+# Parse arguments
+for arg in "$@"; do
+    if [ "$arg" == "--clean" ]; then
+        MODE="clean"
+    elif [ "$arg" == "--update" ]; then
+        MODE="update"
+    elif [ "$arg" == "--tailscale" ]; then
+        COMPOSE_FILE="docker-compose.tailscale.yml"
+    fi
+done
 
 echo "Mode: $MODE"
+echo "Compose file: $COMPOSE_FILE"
+
 
 if [ "$MODE" == "clean" ]; then
     echo "[1/5] Stopping Jenkins containers and removing volumes..."
-    docker compose down -v
+    docker compose -f "docker-compose.yml" down -v
+    docker compose -f "docker-compose.tailscale.yml" down -v
 
-    echo "[2/5] Cleaning up jenkins_home directory..."
+    echo "[2/5] Cleaning up directories..."
+    # Ensure folder permissions are correct to delete it:
+    # sudo chown -R $USER:$USER jenkins_home
     rm -rf jenkins_home
-    mkdir jenkins_home
+    rm -rf tailscale_state
 else
     echo "[1-2/5] Skipping clean steps (incremental update)."
 fi
@@ -36,12 +48,16 @@ fi
 
 echo "[5/5] Rebuilding and starting Jenkins (detached)..."
 # --build ensures changes in Dockerfile or plugins.txt are applied
-docker compose up --build -d
+docker compose -f "$COMPOSE_FILE" up --build -d
 
 echo ""
 echo "Setup complete!" 
-echo "Jenkins is starting up (Mode: $MODE)..."
-echo "Check the logs for any errors: docker compose logs -f"
+echo "Jenkins is starting up (Mode: $MODE, Compose: $COMPOSE_FILE)..."
+echo "Check the logs for any errors: docker compose -f $COMPOSE_FILE logs -f"
 echo "Plugins are being installed in the background."
-echo "Access Jenkins at: http://localhost:8080"
+if [ "$COMPOSE_FILE" == "docker-compose.tailscale.yml" ]; then
+    echo "Access Jenkins at: http://jenkins-utils:8080 (via Tailscale) or http://localhost:8080"
+else
+    echo "Access Jenkins at: http://localhost:8080"
+fi
 
