@@ -10,11 +10,11 @@
 # - branch: Branch to build for 'single' type jobs (default: main)
 
 applications:
-  - name: ai-gym-pt
-    owner: HariSeldon86
-    repo: ai-gym-pt
-    type: multibranch
-    scriptPath: jenkins/Jenkinsfile
+  # - name: ai-gym-pt
+  #   owner: HariSeldon86
+  #   repo: ai-gym-pt
+  #   type: multibranch
+  #   scriptPath: jenkins/Jenkinsfile
 
   - name: ai-gym-pt-main
     owner: HariSeldon86

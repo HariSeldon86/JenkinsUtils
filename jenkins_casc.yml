@@ -70,32 +70,6 @@ credentials:
 
 jobs:
   - script: >
-      multibranchPipelineJob('ai-gym-pt') {
-        branchSources {
-          git {
-            id('ai-gym-pt')
-            remote('https://github.com/HariSeldon86/ai-gym-pt.git')
-            credentialsId('github-credentials')
-            includes('*')
-          }
-        }
-        triggers {
-          periodicFolderTrigger {
-            interval('1m')
-          }
-        }
-        factory {
-          workflowBranchProjectFactory {
-            scriptPath('jenkins/Jenkinsfile')
-          }
-        }
-        orphanedItemStrategy {
-          discardOldItems {
-            numToKeep(10)
-          }
-        }
-      }
-
       pipelineJob('ai-gym-pt-main') {
         triggers {
           scm('*/1 * * * *')
